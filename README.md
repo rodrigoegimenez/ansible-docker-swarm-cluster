@@ -1,0 +1,1 @@
+# ansible-docker-swarm-cluster
