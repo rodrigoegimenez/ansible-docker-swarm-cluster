@@ -1,0 +1,48 @@
+- hosts: master
+  vars_prompt:
+    - name: domain
+      prompt: 'Enter domain for jenkins'
+      private: no
+
+  tasks:
+    - name: Get docker group id
+      shell: "getent group docker | cut -d':' -f3"
+      register: docker_gid_raw
+
+    - name: set join command
+      set_fact:
+        docker_gid: '{{ docker_gid_raw.stdout_lines[0] }}'
+
+    - name: Copy jenkins dir
+      synchronize:
+        src: .
+        dest: .
+
+    - name: Cloning jenkins-docker repository
+      git:
+        repo: https://github.com/rodrigoegimenez/jenkins-docker.git
+        version: master
+        dest: jenkins/jenkins-docker
+        accept_hostkey: yes
+
+    - name: Building jenkins-docker image
+      docker_image:
+        build:
+          path: jenkins/jenkins-docker
+          nocache: true
+          pull: yes
+          args:
+            DOCKER_GID: '{{ docker_gid }}'
+        name: jenkins-docker
+        source: build
+        force_source: yes
+
+    - name: Add jenkins label for master node
+      shell: 'docker node update --label-add jenkins.jenkins-data=true master'
+
+    - name: Deploy jenkins
+      shell: 'docker stack deploy -c jenkins/docker-compose.yml jenkins'
+      environment:
+        - DOMAIN: '{{ domain }}'
+      args:
+        chdir: $HOME

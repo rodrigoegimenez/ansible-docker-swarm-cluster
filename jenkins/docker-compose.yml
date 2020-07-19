@@ -1,0 +1,34 @@
+version: '3.3'
+
+services:
+  jenkins:
+    image: jenkins-docker
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.jenkins.jenkins-data == true
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.jenkins-http.rule=Host(`${DOMAIN?Variable not set}`)
+        - traefik.http.routers.jenkins-http.entrypoints=http
+        - traefik.http.routers.jenkins-http.middlewares=https-redirect
+        - traefik.http.routers.jenkins-https.rule=Host(`${DOMAIN?Variable not set}`)
+        - traefik.http.routers.jenkins-https.entrypoints=https
+        - traefik.http.routers.jenkins-https.tls=true
+        - traefik.http.routers.jenkins-https.tls.certresolver=le
+        - traefik.http.services.jenkins.loadbalancer.server.port=8080
+
+networks:
+  traefik-public:
+    external: true
+
+volumes:
+  jenkins_home:

@@ -1,0 +1,51 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Upgrade all packages to the latest version
+      apt:
+        name: '*'
+        state: latest
+        update_cache: yes
+
+    - name: add Docker apt-key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: add Docker's APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+        filename: 'docker'
+
+    - name: install Docker
+      apt:
+        name: docker-ce
+        state: present
+        update_cache: true
+
+    - name: install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+        update_cache: true
+
+    - name: Run whoami without become.
+      command: whoami
+      changed_when: false
+      become: false
+      register: whoami
+
+    - name: Set a fact with the user name.
+      set_fact:
+        login_user: '{{ whoami.stdout }}'
+
+    - name: Add the current user to 'docker' group
+      become: yes
+      user:
+        name: '{{ whoami.stdout }}'
+        groups: docker
+        append: yes
+
+    - name: Reset SSH connection to refresh user groups
+      meta: reset_connection

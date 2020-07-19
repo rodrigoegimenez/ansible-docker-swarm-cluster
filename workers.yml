@@ -1,0 +1,18 @@
+- hosts: master
+  gather_facts: false
+  tasks:
+    - name: get join command
+      shell: 'docker swarm join-token worker | grep join'
+      register: join_command_raw
+
+    - name: set join command
+      set_fact:
+        join_command: '{{ join_command_raw.stdout_lines[0] }}'
+
+- hosts: workers
+  tasks:
+    - name: join cluster
+      shell: "{{ hostvars['master'].join_command }} >> node_joined.txt"
+      args:
+        chdir: $HOME
+        creates: node_joined.txt

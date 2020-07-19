@@ -1,0 +1,9 @@
+[masters]
+master ansible_host=1.2.3.4
+
+[workers]
+node-1 ansible_host=2.3.4.5
+node-2 ansible_host=3.4.5.6
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
