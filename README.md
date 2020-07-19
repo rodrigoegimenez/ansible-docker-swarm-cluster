@@ -1,6 +1,6 @@
 # Ansible Docker Swarm Cluster
 
-Create and deploy an n-node docker swarm cluster in minutes, with [Traefik](https://containo.us/traefik/) as a reverse proxy and load balancer, [Portainer](https://www.portainer.io/) to manage containers and [Jenkins](https://www.jenkins.io/) as a CI/CD solution.
+Create and deploy an n-node docker swarm cluster in minutes, with [Traefik](https://containo.us/traefik/) as a reverse proxy and load balancer, [Portainer](https://www.portainer.io/) to manage containers and [Jenkins](https://www.jenkins.io/) as a CI/CD solution (this is a [customized](https://github.com/rodrigoegimenez/jenkins-docker) Jenkins docker image whose Jobs can interact with docker).
 
 ## Prerequisites
 
