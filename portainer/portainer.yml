@@ -1,8 +1,4 @@
-- hosts: master
-  vars_prompt:
-    - name: domain
-      prompt: 'Enter domain for portainer'
-      private: no
+- hosts: main
 
   tasks:
     - name: Copy portainer dir
@@ -10,12 +6,12 @@
         src: .
         dest: .
 
-    - name: Add portainer label for master node
-      shell: 'docker node update --label-add portainer.portainer-data=true master'
+    - name: Add portainer label for main node
+      shell: 'docker node update --label-add portainer.portainer-data=true {{ main_node }}'
 
     - name: Deploy portainer
       shell: 'docker stack deploy -c portainer/docker-compose.yml portainer'
       environment:
-        - DOMAIN: '{{ domain }}'
+        - DOMAIN: '{{ portainer_domain }}'
       args:
         chdir: $HOME

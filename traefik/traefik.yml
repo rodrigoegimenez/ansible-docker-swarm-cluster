@@ -1,19 +1,4 @@
-- hosts: master
-  vars_prompt:
-    - name: username
-      prompt: 'Enter username for traefik'
-      private: no
-
-    - name: password
-      prompt: 'Enter password for traefik'
-
-    - name: email
-      prompt: 'Enter email for traefik'
-      private: no
-
-    - name: domain
-      prompt: 'Enter domain for traefik'
-      private: no
+- hosts: main
 
   tasks:
     - name: Copy traefik dir
@@ -22,15 +7,15 @@
         dest: .
 
     - name: Create hashed password
-      shell: 'openssl passwd -apr1 {{ password }}'
+      shell: 'openssl passwd -apr1 {{ traefik_password }}'
       register: hashed_password_raw
 
     - name: save hashed password
       set_fact:
         hashed_password: '{{ hashed_password_raw.stdout_lines[0] }}'
 
-    - name: Add traefik label for master node
-      shell: 'docker node update --label-add traefik-public.traefik-public-certificates=true master'
+    - name: Add traefik label for main node
+      shell: 'docker node update --label-add traefik-public.traefik-public-certificates=true {{ main_node }}'
 
     - name: Create traefik network
       shell: 'docker network create --driver=overlay traefik-public > create_traefik_network.txt'
@@ -41,9 +26,9 @@
     - name: Deploy traefik
       shell: 'docker stack deploy -c traefik/docker-compose.yml traefik'
       environment:
-        - USERNAME: '{{ username }}'
+        - USERNAME: '{{ traefik_username }}'
         - HASHED_PASSWORD: '{{ hashed_password }}'
-        - EMAIL: '{{ email }}'
-        - DOMAIN: '{{ domain }}'
+        - EMAIL: '{{ traefik_email }}'
+        - DOMAIN: '{{ traefik_domain }}'
       args:
         chdir: $HOME

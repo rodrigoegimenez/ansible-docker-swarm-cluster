@@ -1,0 +1,7 @@
+main_node: main.example.com
+traefik_username: yourname
+traefik_password: changeme
+traefik_email: traefik@example.com
+traefik_domain: traefik.example.com
+jenkins_domain: jenkins.example.com
+portainer_domain: portainer.example.com

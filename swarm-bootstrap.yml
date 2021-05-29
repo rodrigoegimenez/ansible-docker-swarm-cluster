@@ -1,6 +1,5 @@
-- import_playbook: ssh-keyscan.yml
 - import_playbook: docker-dependencies.yml
-- import_playbook: master.yml
+- import_playbook: main.yml
 - import_playbook: workers.yml
 - import_playbook: traefik/traefik.yml
 - import_playbook: portainer/portainer.yml

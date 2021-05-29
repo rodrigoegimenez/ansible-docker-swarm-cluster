@@ -1,8 +1,4 @@
-- hosts: master
-  vars_prompt:
-    - name: domain
-      prompt: 'Enter domain for jenkins'
-      private: no
+- hosts: main
 
   tasks:
     - name: Get docker group id
@@ -37,12 +33,12 @@
         source: build
         force_source: yes
 
-    - name: Add jenkins label for master node
-      shell: 'docker node update --label-add jenkins.jenkins-data=true master'
+    - name: Add jenkins label for main node
+      shell: 'docker node update --label-add jenkins.jenkins-data=true {{ main_node }}'
 
     - name: Deploy jenkins
       shell: 'docker stack deploy -c jenkins/docker-compose.yml jenkins'
       environment:
-        - DOMAIN: '{{ domain }}'
+        - DOMAIN: '{{ jenkins_domain }}'
       args:
         chdir: $HOME
