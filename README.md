@@ -29,7 +29,6 @@ make swarm-cluster
 This command will start running the imported playbooks in the order they appear:
 
 ```ansible
-- import_playbook: ssh-keyscan.yml
 - import_playbook: docker-dependencies.yml
 - import_playbook: main.yml
 - import_playbook: workers.yml
