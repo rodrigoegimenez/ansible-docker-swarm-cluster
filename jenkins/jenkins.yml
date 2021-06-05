@@ -17,7 +17,7 @@
     - name: Cloning jenkins-docker repository
       git:
         repo: https://github.com/rodrigoegimenez/jenkins-docker.git
-        version: master
+        version: main
         dest: jenkins/jenkins-docker
         accept_hostkey: yes
 
@@ -32,6 +32,20 @@
         name: jenkins-docker
         source: build
         force_source: yes
+
+    - name: Building jenkins-docker-agent image
+      docker_image:
+        build:
+          path: jenkins/jenkins-docker
+          dockerfile: Dockerfile.agent
+          nocache: true
+          pull: yes
+          args:
+            DOCKER_GID: '{{ docker_gid }}'
+        name: jenkins-docker-agent
+        source: build
+        force_source: yes
+
 
     - name: Add jenkins label for main node
       shell: 'docker node update --label-add jenkins.jenkins-data=true {{ main_node }}'
